@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Projets {
+  nomProj   String          @id
+  mgrProj   String
+  budget    Decimal
+  dateDebut DateTime
+  liens     ProjetEmploye[]
+}
+
+model Departements {
+  deptEmp  String     @id
+  mgrEmp   String
+  employes Employes[]
+}
+
+model Employes {
+  idEmp   String          @id
+  nomEmp  String
+  salaire Decimal
+  mgrEmp  String?
+  deptEmp String
+  dept    Departements    @relation(fields: [deptEmp], references: [deptEmp])
+  liens   ProjetEmploye[]
+}
+
+model ProjetEmploye {
+  nomProj String
+  idEmp   String
+  heures  Int
+  evalEmp Int?
+  emp     Employes @relation(fields: [idEmp], references: [idEmp], onDelete: Cascade)
+  projet  Projets  @relation(fields: [nomProj], references: [nomProj], onDelete: Cascade)
+
+  @@id([nomProj, idEmp])
+}
